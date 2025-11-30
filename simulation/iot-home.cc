@@ -14,7 +14,6 @@ NS_LOG_COMPONENT_DEFINE("IoTHomeFinal");
 int main(int argc, char *argv[]) {
     uint32_t nCamera = 6;
     uint32_t nThermo = 12;
-    uint32_t nLight = 15;
     uint32_t nAssistant = 3;
     uint32_t nTV = 2;
     uint32_t nLaptop = 4;
@@ -104,19 +103,6 @@ int main(int argc, char *argv[]) {
         PacketSinkHelper s("ns3::UdpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
         s.Install(serverNodes.Get(1)).Start(Seconds(0.0));
     }
-    // Light (UDP)
-    for(uint32_t i=0; i<nLight; i++) {
-        uint16_t port = 3000+i;
-        OnOffHelper c("ns3::UdpSocketFactory", InetSocketAddress(serverInterfaces.GetAddress(3), port));
-        c.SetAttribute("DataRate", StringValue("1kbps"));
-        c.SetAttribute("PacketSize", UintegerValue(50));
-        c.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=0.1]"));
-        c.SetAttribute("OffTime", StringValue("ns3::ExponentialRandomVariable[Mean=120]"));
-        ApplicationContainer app = c.Install(wifiStaNodes.Get(idx++));
-        app.Start(Seconds(rnd->GetValue(0,5))); app.Stop(Seconds(duration));
-        PacketSinkHelper s("ns3::UdpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
-        s.Install(serverNodes.Get(2)).Start(Seconds(0.0));
-    }
     // Assistant (UDP)
     for(uint32_t i=0; i<nAssistant; i++) {
         uint16_t port = 4000+i;
@@ -132,27 +118,27 @@ int main(int argc, char *argv[]) {
     }
 
     // --- LE FACTEUR DOMINANT ---
-    // TV (TCP Bulk - Illimité)
+    // TV (TCP Bulk - Illimit)
     for(uint32_t i=0; i<nTV; i++) {
         uint16_t port = 5000+i;
         BulkSendHelper c("ns3::TcpSocketFactory", InetSocketAddress(serverInterfaces.GetAddress(5), port));
         c.SetAttribute("MaxBytes", UintegerValue(0));
         c.SetAttribute("SendSize", UintegerValue(1500)); // Gros paquets
         ApplicationContainer app = c.Install(wifiStaNodes.Get(idx++));
-        app.Start(Seconds(1.0)); // Démarre tôt !
+        app.Start(Seconds(1.0)); // DÃ©marre tÃ´t !
         app.Stop(Seconds(duration));
         PacketSinkHelper s("ns3::TcpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
         s.Install(serverNodes.Get(4)).Start(Seconds(0.0));
     }
-    // Laptop (TCP Bulk - Illimité)
-    // C'est eux qui vont inonder le réseau et créer les 1600+ échantillons
+    // Laptop (TCP Bulk - Illimit)
+    // C'est eux qui vont inonder le rÃ©seau et crÃ©er les 1600+ Ã©chantillons
     for(uint32_t i=0; i<nLaptop; i++) {
         uint16_t port = 6000+i;
         BulkSendHelper c("ns3::TcpSocketFactory", InetSocketAddress(serverInterfaces.GetAddress(6), port));
         c.SetAttribute("MaxBytes", UintegerValue(0));
         c.SetAttribute("SendSize", UintegerValue(1500));
         ApplicationContainer app = c.Install(wifiStaNodes.Get(idx++));
-        app.Start(Seconds(2.0)); // Démarre tôt !
+        app.Start(Seconds(2.0)); // DÃ©marre tÃ´t !
         app.Stop(Seconds(duration));
         PacketSinkHelper s("ns3::TcpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
         s.Install(serverNodes.Get(5)).Start(Seconds(0.0));
