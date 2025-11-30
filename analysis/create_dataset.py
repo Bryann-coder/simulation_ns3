@@ -6,7 +6,6 @@ import glob, sys
 def get_label(port):
     if 1000<=port<2000: return "Camera"
     if 2000<=port<3000: return "Thermo"
-    if 3000<=port<4000: return "Light"
     if 4000<=port<5000: return "Assistant"
     if 5000<=port<6000: return "TV"
     if 6000<=port<7000: return "Laptop"
@@ -32,11 +31,11 @@ def main():
     pcap_files = glob.glob("iot-wired-*.pcap")
     if not pcap_files: sys.exit("L Pas de fichier PCAP")
     
-    print(f"=Â Analyse de {pcap_files[0]}...")
+    print(f"âœ… Analyse de {pcap_files[0]}...")
     try: packets = rdpcap(pcap_files[0])
     except: sys.exit("Erreur lecture")
     
-    print(f" {len(packets)} paquets chargés.")
+    print(f"âœ… {len(packets)} paquets chargÃ©s.")
     flows = {}
     
     for p in packets:
@@ -78,7 +77,7 @@ def main():
     if dataset:
         df = pd.DataFrame(dataset)
         df.to_csv("iot_dataset_final.csv", index=False)
-        print("\n=== RÉSULTATS ===")
+        print("\n=== RÃ‰SULTATS ===")
         print(df['label'].value_counts())
     else:
         print("L Vide.")
